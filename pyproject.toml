@@ -1,0 +1,28 @@
+[project]
+name = "whisper-mcp"
+version = "0.1.0"
+description = "MCP server exposing OpenAI Whisper transcribe_audio for Claude Code Channels voice-input"
+authors = [{ name = "Serge Kroes" }]
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+dependencies = [
+    "mcp>=1.0",
+    "openai>=1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "mcp[cli]>=1.0",
+    "ruff>=0.1",
+]
+
+[project.scripts]
+whisper-mcp = "whisper_mcp.__main__:run"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["whisper_mcp"]

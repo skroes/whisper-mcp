@@ -23,6 +23,14 @@ DEFAULT_MODEL = "gpt-4o-mini-transcribe"
 # Hardcoded MVP language. Multi-language is post-MVP.
 DEFAULT_LANGUAGE = "nl"
 
+# OpenAI Whisper accepteert filename-driven format detection. Telegram
+# levert Opus voice als .oga; Whisper rejecteert dat als format. Map naar
+# een Whisper-bekende extensie zonder de disk-file te hoeven kopiëren —
+# we overriden alleen de filename in de upload-tuple.
+_EXT_REMAP = {
+    ".oga": ".ogg",  # Telegram voice = Opus, identieke container
+}
+
 
 async def transcribe_audio(file_path: str) -> str:
     """Transcribe an audio file to text via OpenAI Whisper.
@@ -84,12 +92,21 @@ def _call_openai_sync(path: Path) -> str:
     """Sync OpenAI call, wrapped in asyncio.to_thread by caller."""
     import openai
 
+    # Filename-override: OpenAI gebruikt de extensie van de filename voor
+    # format-detectie. Telegram's .oga (Opus Audio) wordt afgewezen — map
+    # naar .ogg via tuple-upload zonder disk-copy.
+    ext = path.suffix.lower()
+    upload_name = path.name
+    if ext in _EXT_REMAP:
+        upload_name = path.stem + _EXT_REMAP[ext]
+        logger.debug("ext remap: %s -> %s (upload as)", path.name, upload_name)
+
     client = openai.OpenAI()
     with open(path, "rb") as audio_file:
         try:
             result = client.audio.transcriptions.create(
                 model=DEFAULT_MODEL,
-                file=audio_file,
+                file=(upload_name, audio_file),
                 language=DEFAULT_LANGUAGE,
                 temperature=0,
             )

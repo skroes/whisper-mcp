@@ -5,4 +5,4 @@ Closes the Channels-gap: official Claude Code Channels plugins
 transcription. This tool accepts a file_path and returns text.
 """
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"

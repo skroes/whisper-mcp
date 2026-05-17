@@ -1,6 +1,6 @@
 [project]
 name = "whisper-mcp"
-version = "0.1.0"
+version = "0.1.1"
 description = "MCP server exposing OpenAI Whisper transcribe_audio for Claude Code Channels voice-input"
 authors = [{ name = "Serge Kroes" }]
 readme = "README.md"
